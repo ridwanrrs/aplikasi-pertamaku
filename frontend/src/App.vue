@@ -1,30 +1,46 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
+import CommentSection from './components/CommentSection.vue';
+
+const userId = ref('');
+const users = ref(null);
+const newEmail = ref('');
+
+const getUser = async () => {
+  const response = await fetch(`http://localhost:3000/api/user/${userId.value}`);
+  users.value = await response.json();
+};
+
+const changeEmail = async () => {
+  await fetch('http://localhost:3000/api/change-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `email=${newEmail.value}`,
+  });
+};
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div id="app">
+    <h1>User Dashboard</h1>
+    <div>
+      <input v-model="userId" placeholder="Enter User ID" />
+      <button @click="getUser">Get User Info</button>
+    </div>
+    <div v-if="users">
+      <template v-for="user in users">
+        <h2>{{ user.name }}</h2>
+        <p>Email: {{ user.email }}</p>
+        <hr />
+      </template>
+    </div>
+    <CommentSection />
+    <form @submit.prevent="changeEmail">
+      <h3>Change Email</h3>
+      <input v-model="newEmail" placeholder="New Email" />
+      <button type="submit">Submit</button>
+    </form>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
-
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>

@@ -2,9 +2,14 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sqlite3 from 'sqlite3';
+import cors from 'cors';
 
 const app = express();
 app.use(express.json())
+app.use(cors({
+  origin: '*',
+  optionsSuccessStatus: 200,
+}));
 
 const connection = new sqlite3.Database('./db/aplikasi.db')
 
